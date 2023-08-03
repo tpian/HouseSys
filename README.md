@@ -2,7 +2,6 @@
 
 对个人完成的项目危房改造管理系统的后端介绍说明，项目已商用，本仓库仅做介绍与**后端框架**学习用途，项目代码不开源
 线上商用地址：https://weifangguanli.com
-
 Web 管理系统主页截图：
 ![Image Text](./figure/homepage.png)
 小程序主页截图：
@@ -75,7 +74,9 @@ IDEA编译器，IDE插件，lombok插件
 ### 架构组件
 
 微服务中包含三个基本组件：注册中心、服务提供者、服务消费者。当服务消费者 A 需要调用服务提供者 B 的接口时，由注册中心向 A 提供 B 的地址与端口进行调用。
+
 **1. Service Consumer（Gateway）**
+
 项目中使用的服务消费者同时是本系统的网关 gateway，网关服务的 application.yml 相关配置如下：
 
 ```xml
@@ -141,8 +142,11 @@ spring:
 ![Image](./figure/gateway.png)
 
 - 路由转发
+
   例如，如通过前面的配置，发送到网关的请求`/api/auth/captcha`，由于符合转发路径中的第一个路由，请求将转发到将路由到 lb://ace-admin，具体 IP、port 由**注册中心**提供，请求地址也将从`/api/auth/captcha`变成`/captcha`。
+
 - 请求拦截
+
   在前面的配置中，已通过`default-filters`进行了全局过滤器，此外转发路径`routes`中,通过断言`predicates`、当前路由过滤器`filters`进行对具体某个路由的过滤与转换，已能满足大多数需要。但在危房改造系统中，需要确保通过鉴权的客户端才能与服务器通信，因此实现了 GlobalFilter 接口，对请求进行鉴权拦截。
   ![JWT](./figure/JWT.png)
 
@@ -175,6 +179,7 @@ spring:
   在请求拦截中，对 token 的鉴别主要使用 JWT 鉴权，这部分的内容将在业务模块的介绍中具体展开。
 
 - 负载均衡
+
   当使用微服务集群时，负载均衡会将将流量分发到不同的后端服务来扩展应用系统的服务吞吐能力，消除单点故障并提升应用系统的可用性。在危房改造系统中，通过使用`Spring Cloud Loadbalancer`依赖实现负载均衡，由于 Spring Cloud 默认均衡器为 Ribbon，需要在配置项中将其禁用：
 
   ```xml
