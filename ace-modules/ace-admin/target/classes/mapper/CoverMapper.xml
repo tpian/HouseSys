@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.CoverMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.Cover" id="coverMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="effect" column="effect"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtName" column="crt_name"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updName" column="upd_name"/>
+    </resultMap>
+
+</mapper>

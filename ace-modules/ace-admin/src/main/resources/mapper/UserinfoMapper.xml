@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.UserinfoMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.Userinfo" id="userinfoMap">
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="birthday" column="birthday"/>
+        <result property="county" column="county"/>
+        <result property="town" column="town"/>
+        <result property="village" column="village"/>
+        <result property="dplate" column="dplate"/>
+        <result property="address" column="address"/>
+        <result property="cardId" column="card_id"/>
+        <result property="mobilePhone" column="mobile_phone"/>
+        <result property="telPhone" column="tel_phone"/>
+        <result property="email" column="email"/>
+        <result property="unit" column="unit"/>
+        <result property="sex" column="sex"/>
+        <result property="type" column="type"/>
+        <result property="staff" column="staff"/>
+        <result property="openid" column="openId"/>
+        <result property="description" column="description"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtUser" column="crt_user"/>
+        <result property="crtName" column="crt_name"/>
+        <result property="crtHost" column="crt_host"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updUser" column="upd_user"/>
+        <result property="updName" column="upd_name"/>
+        <result property="updHost" column="upd_host"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+
+    <select id="getfarmlist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where mobile_phone = #{phone}
+        and is_delete=0
+        <if test="keyword!=null">
+            and (name like concat('%', #{keyword}, '%')
+            or card_id = #{keyword}
+            or staff = #{keyword}
+            or mobile_phone = #{keyword})
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getvilist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and town =#{town}
+        and village =#{village}
+        and is_delete=0
+        <if test="keyword!=null">
+            and (name like concat('%', #{keyword}, '%')
+            or card_id = #{keyword}
+            or staff = #{keyword}
+            or mobile_phone = #{keyword})
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getTownlist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and town =#{town}
+        and is_delete=0
+        <if test="keyword!=null">
+            and (name like concat('%', #{keyword}, '%')
+            or card_id = #{keyword}
+            or staff = #{keyword}
+            or mobile_phone = #{keyword})
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getUserlist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and is_delete=0
+        <if test="keyword!=null">
+            and (name like concat('%', #{keyword}, '%')
+            or card_id = #{keyword}
+            or staff = #{keyword}
+            or mobile_phone = #{keyword})
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="stat" resultType="java.util.Map">
+        SELECT count(staff = 1 OR NULL) AS 'date',
+               count(staff = 2 OR NULL) AS 'date2',
+               count(staff = 3 OR NULL) AS 'date3',
+               count(staff = 4 OR NULL) AS 'date4',
+               count(staff = 5 OR NULL) AS 'date5',
+               count(staff = 6 OR NULL) AS 'date6',
+               count(staff = 7 OR NULL) AS 'date7',
+               count(staff = 8 OR NULL) AS 'date8',
+               count(staff)             AS 'date9'
+        FROM base_userinfo
+        where is_delete = 0
+          and type = 0
+    </select>
+
+
+    <select id="getwebvilist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and town =#{town}
+        and village =#{village}
+        and is_delete=0
+        <if test="userinfo.name != null  and userinfo.name != ''">
+            and name like concat('%', #{userinfo.name}, '%')
+        </if>
+        <if test="userinfo.type != null">
+            and type =#{userinfo.type}
+        </if>
+        <if test="userinfo.staff != null  and userinfo.staff != ''">
+            and staff = #{userinfo.staff}
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getwebTownlist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and town =#{town}
+        and is_delete=0
+        <if test="userinfo.name != null  and userinfo.name != ''">
+            and name like concat('%', #{userinfo.name}, '%')
+        </if>
+        <if test="userinfo.type != null">
+            and type =#{userinfo.type}
+        </if>
+        <if test="userinfo.staff != null  and userinfo.staff != ''">
+            and staff = #{userinfo.staff}
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getwebUserlist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        where county=#{county}
+        and is_delete=0
+        <if test="userinfo.name != null  and userinfo.name != ''">
+            and name like concat('%', #{userinfo.name}, '%')
+        </if>
+        <if test="userinfo.type != null">
+            and type =#{userinfo.type}
+        </if>
+        <if test="userinfo.staff != null  and userinfo.staff != ''">
+            and staff = #{userinfo.staff}
+        </if>
+        order by type desc
+    </select>
+
+
+    <select id="getweblist" resultMap="userinfoMap">
+        SELECT * FROM base_userinfo
+        <where>
+            is_delete=0
+            <if test="name != null  and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="type != null">
+                and type =#{type}
+            </if>
+            <if test="staff != null  and staff != ''">
+                and staff = #{staff}
+            </if>
+        </where>
+        order by type desc
+    </select>
+
+</mapper>

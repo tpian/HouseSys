@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: ace-monitor
+  cloud:
+    nacos:
+      discovery:
+        server-addr: xxx.xxx.xxx.xxx:xxxx #nacos地址、端口
+
+server:
+  port: xxxx #启动端口
+#
+#eureka:
+#     instance:
+#        preferIpAddress: true
+#        statusPageUrlPath: /actuator/info
+#        healthCheckUrlPath: /actuator/health
+#     client:
+#        registerWithEureka: true
+#        fetchRegistry: true
+#        serviceUrl:
+#          defaultZone: http://localhost:8761/eureka/
+

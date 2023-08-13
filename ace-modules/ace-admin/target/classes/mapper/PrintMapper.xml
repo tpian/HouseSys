@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.PrintMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.Print" id="printMap">
+        <result property="id" column="id"/>
+        <result property="coverId" column="cover_id"/>
+        <result property="images" column="images"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtName" column="crt_name"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updName" column="upd_name"/>
+    </resultMap>
+
+    <select id="list" resultMap="printMap">
+        select p.*
+        from base_print p
+        INNER JOIN base_cover c on p.cover_id = c.id
+        where 1=1
+        <if test="type != null">
+            and c.type = #{type}
+        </if>
+        <if test="coverId != null">
+            and p.cover_id=#{coverId}
+        </if>
+    </select>
+</mapper>

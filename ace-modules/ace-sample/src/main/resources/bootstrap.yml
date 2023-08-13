@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ace-sample
+  cloud:
+    nacos:
+      config:
+        server-addr: xxx.xxx.xxx.xxx:xxxx #nacos地址、端口
+        file-extension: yaml
+      discovery:
+        server-addr: xxx.xxx.xxx.xxx:xxxx #nacos地址、端口
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true

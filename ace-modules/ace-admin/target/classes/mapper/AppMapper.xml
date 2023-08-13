@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.AppMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.App" id="appMap">
+        <result property="id" column="id"/>
+        <result property="cardId" column="card_id"/>
+        <result property="front" column="front"/>
+        <result property="back" column="back"/>
+        <result property="member" column="member"/>
+        <result property="poor" column="poor"/>
+        <result property="report" column="report"/>
+        <result property="house" column="house"/>
+        <result property="cardBank" column="card_bank"/>
+        <result property="housingSt" column="Housing_st"/>
+        <result property="houseType" column="house_type"/>
+        <result property="houseImage" column="house_image"/>
+        <result property="housePlan" column="house_plan"/>
+        <result property="creaTime" column="crea_time"/>
+        <result property="updataTime" column="updata_time"/>
+        <result property="openid" column="openid"/>
+        <result property="userId" column="user_id"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <sql id="app">
+        select us.id           userId,
+               us.name         name,
+               us.town         town,
+               us.address      address,
+               us.mobile_phone mobilePhone,
+               us.staff        staff,
+               us.crt_time     crtTime,
+               ap.id           appId,
+               ap.card_id      cardId,
+               ap.front        front,
+               ap.back         Back,
+               ap.member       member,
+               ap.poor         poor,
+               ap.report       report,
+               ap.house        house,
+               ap.card_bank    cardBank,
+               ap.Housing_st   housingSt,
+               ap.house_type   houseType,
+               ap.house_image  houseImage,
+               ap.house_plan   housePlan,
+               ap.crea_time    creaTime,
+               rw.id           rwId,
+               rw.au_time      auTime,
+               rw.schedule     schedule,
+               rw.au_notes     auNotes,
+               rw.au_appr      auAppr,
+               rw.record       record,
+               rw.autell_image autellImage,
+               rw.scene        scene,
+               rw.receipt      receipt,
+               rw.autell_time  autellTime,
+               rw.wn_time      wnTime,
+               rw.wn_schedule  wnschedule,
+               rw.wn_notes     wnNotes,
+               rw.wn_appr      wnAppr,
+               rw.fieldwn      fieldwn,
+               rw.wntell_image wntellImage,
+               rw.scenewn      scenewn,
+               rw.receiptwn    receiptwn,
+               rw.hold         hold,
+               rw.protocol     protocol,
+               rw.wntell_time  wntellTime,
+               rw.ty_time      tyTime,
+               rw.ty_schedule  tyschedule,
+               rw.ty_notes     tyNotes,
+               rw.ty_appr      tyAppr,
+               rw.tytell_image tytellImage,
+               rw.tytell_time  tytellTime,
+               rw.mz_time      mzTime,
+               rw.mz_schedule  mzschedule,
+               rw.mz_notes     mzNotes,
+               rw.mz_appr      mzAppr,
+               rw.mztell_image mztellImage,
+               rw.zj_time      zjTime,
+               rw.zj_schedule  zjschedule,
+               rw.zj_notes     zjNotes,
+               rw.zj_appr      zjAppr,
+               rw.zjtell_image zjtellImage,
+               rw.zjtell_time  zjtellTime
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+    </sql>
+
+
+    <select id="getUserId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where ap.user_id=#{id}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+    </select>
+
+    <select id="getinfoId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        SELECT *
+        FROM base_userinfo
+        where id = #{id}
+          and is_delete = 0
+    </select>
+
+    <select id="getAppId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where rw.app_id=#{id}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+    </select>
+
+    <select id="selectById" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where ap.id=#{id}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+    </select>
+
+    <select id="getvilist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.village =#{village}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword}
+            or us.staff =#{keyword}
+            or us.mobile_phone = #{keyword})
+        </if>
+    </select>
+
+    <select id="getTownlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.type=0
+        and rw.schedule=1
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword}
+            or us.staff =#{keyword}
+            or us.mobile_phone = #{keyword})
+        </if>
+    </select>
+
+    <select id="getUserlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where us.county=#{county}
+        and us.type=0
+        and rw.wn_schedule=1
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+        and staff in(1,2,3,4,8)
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword}
+            or us.staff =#{keyword}
+            or us.mobile_phone = #{keyword})
+        </if>
+    </select>
+
+
+    <select id="getmzlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where us.county=#{county}
+        and us.type=0
+        and rw.wn_schedule=1
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+        and staff in(5,6,7)
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword}
+            or us.staff =#{keyword}
+            or us.mobile_phone = #{keyword})
+        </if>
+    </select>
+
+    <select id="getzjlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        where us.county=#{county}
+        and us.type=0
+        and (rw.ty_schedule=1 or rw.mz_schedule=1)
+        and us.is_delete=0
+        and ap.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword}
+            or us.staff =#{keyword}
+            or us.mobile_phone = #{keyword})
+        </if>
+    </select>
+
+
+    <select id="getvicount" resultType="java.util.Map">
+        select count(us.id) number
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+        where us.county = #{county}
+          and us.town = #{town}
+          and us.village = #{village}
+          and us.type = 0
+          and rw.schedule = 0
+          and us.is_delete = 0
+          and ap.is_delete = 0
+          and rw.is_delete = 0
+    </select>
+
+    <select id="getTowncount" resultType="java.util.Map">
+        select count(us.id) number
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+        where us.county = #{county}
+          and us.town = #{town}
+          and us.type = 0
+          and rw.schedule = 1
+          and rw.wn_schedule = 0
+          and us.is_delete = 0
+          and ap.is_delete = 0
+          and rw.is_delete = 0
+    </select>
+
+    <select id="getUsercount" resultType="java.util.Map">
+        select count(us.id) number
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+        where us.county = #{county}
+          and us.type = 0
+          and rw.wn_schedule = 1
+          and rw.ty_schedule = 0
+          and us.is_delete = 0
+          and ap.is_delete = 0
+          and rw.is_delete = 0
+          and staff in (1, 2, 3, 4, 8)
+    </select>
+
+
+    <select id="getmzcount" resultType="java.util.Map">
+        select count(us.id) number
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+        where us.county = #{county}
+          and us.type = 0
+          and rw.wn_schedule = 1
+          and rw.mz_schedule = 0
+          and us.is_delete = 0
+          and ap.is_delete = 0
+          and rw.is_delete = 0
+          and staff in (5, 6, 7)
+    </select>
+
+    <select id="getzjcount" resultType="java.util.Map">
+        select count(us.id) number
+        from base_app ap
+                 INNER JOIN base_userinfo us on us.id = ap.user_id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+        where us.county = #{county}
+          and us.type = 0
+          and (rw.ty_schedule = 1 or rw.mz_schedule = 1)
+          and rw.zj_schedule = 0
+          and us.is_delete = 0
+          and ap.is_delete = 0
+          and rw.is_delete = 0
+    </select>
+
+    <select id="weblist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.type=0
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            <if test="name != null  and name != ''">
+                and us.name like concat('%', #{name}, '%')
+            </if>
+            <if test="town != null  and town != ''">
+                and us.town = #{town}
+            </if>
+            <if test="village != null  and village != ''">
+                and us.village =#{village}
+            </if>
+            <if test="staff != null  and staff != ''">
+                and us.staff = #{staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+
+
+    <select id="getwebvilist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.county=#{county}
+            and us.town =#{town}
+            and us.village =#{village}
+            and us.type=0
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            <if test="approvalVO.name != null  and approvalVO.name != ''">
+                and us.name like concat('%', #{approvalVO.name}, '%')
+            </if>
+            <if test="approvalVO.town != null  and approvalVO.town != ''">
+                and us.town = #{approvalVO.town}
+            </if>
+            <if test="approvalVO.village != null  and approvalVO.village != ''">
+                and us.village =#{approvalVO.village}
+            </if>
+            <if test="approvalVO.staff != null  and approvalVO.staff != ''">
+                and us.staff = #{approvalVO.staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+
+    <select id="getwebTownlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.county=#{county}
+            and us.town =#{town}
+            and us.type=0
+            and rw.schedule=1
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            <if test="approvalVO.name != null  and approvalVO.name != ''">
+                and us.name like concat('%', #{approvalVO.name}, '%')
+            </if>
+            <if test="approvalVO.town != null  and approvalVO.town != ''">
+                and us.town = #{approvalVO.town}
+            </if>
+            <if test="approvalVO.village != null  and approvalVO.village != ''">
+                and us.village =#{approvalVO.village}
+            </if>
+            <if test="approvalVO.staff != null  and approvalVO.staff != ''">
+                and us.staff = #{approvalVO.staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+
+    <select id="getwebUserlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.county=#{county}
+            and us.type=0
+            and rw.wn_schedule=1
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            and staff in(1,2,3,4,8)
+            <if test="approvalVO.name != null  and approvalVO.name != ''">
+                and us.name like concat('%', #{approvalVO.name}, '%')
+            </if>
+            <if test="approvalVO.town != null  and approvalVO.town != ''">
+                and us.town = #{approvalVO.town}
+            </if>
+            <if test="approvalVO.village != null  and approvalVO.village != ''">
+                and us.village =#{approvalVO.village}
+            </if>
+            <if test="approvalVO.staff != null  and approvalVO.staff != ''">
+                and us.staff = #{approvalVO.staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+
+
+    <select id="getwebmzlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.county=#{county}
+            and us.type=0
+            and rw.wn_schedule=1
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            and staff in(5,6,7)
+            <if test="approvalVO.name != null  and approvalVO.name != ''">
+                and us.name like concat('%', #{approvalVO.name}, '%')
+            </if>
+            <if test="approvalVO.town != null  and approvalVO.town != ''">
+                and us.town = #{approvalVO.town}
+            </if>
+            <if test="approvalVO.village != null  and approvalVO.village != ''">
+                and us.village =#{approvalVO.village}
+            </if>
+            <if test="approvalVO.staff != null  and approvalVO.staff != ''">
+                and us.staff = #{approvalVO.staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+
+    <select id="getwebzjlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ApprovalVO">
+        <include refid="app"></include>
+        <where>
+            us.county=#{county}
+            and us.type=0
+            and (rw.ty_schedule=1 or rw.mz_schedule=1)
+            and us.is_delete=0
+            and ap.is_delete=0
+            and rw.is_delete=0
+            <if test="approvalVO.name != null  and approvalVO.name != ''">
+                and us.name like concat('%', #{approvalVO.name}, '%')
+            </if>
+            <if test="approvalVO.town != null  and approvalVO.town != ''">
+                and us.town = #{approvalVO.town}
+            </if>
+            <if test="approvalVO.village != null  and approvalVO.village != ''">
+                and us.village =#{approvalVO.village}
+            </if>
+            <if test="approvalVO.staff != null  and approvalVO.staff != ''">
+                and us.staff = #{approvalVO.staff}
+            </if>
+        </where>
+        order by ap.crea_time asc
+    </select>
+</mapper>

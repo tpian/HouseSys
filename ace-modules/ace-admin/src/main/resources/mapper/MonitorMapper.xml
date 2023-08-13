@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.MonitorMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.Monitor" id="monitorMap">
+        <result property="id" column="id"/>
+        <result property="contract" column="contract"/>
+        <result property="contractState" column="contract_state"/>
+        <result property="contractTime" column="contract_time"/>
+        <result property="promise" column="promise"/>
+        <result property="promiseState" column="promise_state"/>
+        <result property="promiseTime" column="promise_time"/>
+        <result property="liability" column="liability"/>
+        <result property="liabilityState" column="liability_state"/>
+        <result property="liabilityTime" column="liability_time"/>
+        <result property="inform" column="inform"/>
+        <result property="informState" column="inform_state"/>
+        <result property="informTime" column="inform_time"/>
+        <result property="found" column="found"/>
+        <result property="foundState" column="found_state"/>
+        <result property="foundTime" column="found_time"/>
+        <result property="part" column="part"/>
+        <result property="partState" column="part_state"/>
+        <result property="partTime" column="part_time"/>
+        <result property="capped" column="capped"/>
+        <result property="cappedState" column="capped_state"/>
+        <result property="cappedTime" column="capped_time"/>
+        <result property="acceptance" column="acceptance"/>
+        <result property="aceState" column="ace_state"/>
+        <result property="aceTime" column="ace_time"/>
+        <result property="checking" column="checking"/>
+        <result property="checkingState" column="checking_state"/>
+        <result property="checkingTime" column="checking_time"/>
+        <result property="urge" column="urge"/>
+        <result property="urgeState" column="urge_state"/>
+        <result property="urgeTime" column="urge_time"/>
+        <result property="filing" column="filing"/>
+        <result property="filingState" column="filing_state"/>
+        <result property="filingTime" column="filing_time"/>
+        <result property="transfer" column="transfer"/>
+        <result property="transferState" column="transfer_state"/>
+        <result property="transferTime" column="transfer_time"/>
+        <result property="violation" column="Violation"/>
+        <result property="violationTime" column="Violation_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="monitor">
+        select us.id              userId,
+               us.name            name,
+               us.town            town,
+               us.address         address,
+               us.mobile_phone    mobilePhone,
+               us.staff           staff,
+               us.crt_time        crtTime,
+               ap.id              appId,
+               ap.card_id         cardId,
+               ap.front           front,
+               ap.back            Back,
+               ap.member          member,
+               ap.poor            poor,
+               ap.report          report,
+               ap.house           house,
+               ap.card_bank       cardBank,
+               ap.Housing_st      housingSt,
+               ap.house_type      houseType,
+               ap.house_image     houseImage,
+               ap.house_plan      housePlan,
+               ap.crea_time       creaTime,
+               mo.id              moId,
+               mo.contract        contract,
+               mo.contract_state  contractState,
+               mo.contract_time   contractTime,
+               mo.promise         promise,
+               mo.promise_state   promiseState,
+               mo.promise_time    promiseTime,
+               mo.liability       liability,
+               mo.liability_state liabilityState,
+               mo.liability_time  liabilityTime,
+               mo.inform          inform,
+               mo.inform_state    informState,
+               mo.inform_time     informTime,
+               mo.found           found,
+               mo.found_state     foundState,
+               mo.found_time      foundTime,
+               mo.part            part,
+               mo.part_state      partState,
+               mo.part_time       partTime,
+               mo.capped          capped,
+               mo.capped_state    cappedState,
+               mo.capped_time     cappedTime,
+               mo.acceptance      acceptance,
+               mo.ace_state       aceState,
+               mo.ace_time        aceTime,
+               mo.checking        checking,
+               mo.checking_state  checkingState,
+               mo.checking_time   checkingTime,
+               mo.urge            urge,
+               mo.urge_state      urgeState,
+               mo.urge_time       urgeTime,
+               mo.filing          filing,
+               mo.filing_state    filingState,
+               mo.filing_time     filingTime,
+               mo.transfer        transfer,
+               mo.transfer_state  transferState,
+               mo.transfer_time   transferTime
+        from base_monitor mo
+                 INNER JOIN base_userinfo us on us.id = mo.user_id
+                 INNER JOIN base_app ap on ap.user_id = us.id
+    </sql>
+
+    <select id="getUserId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where mo.user_id=#{id}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+    </select>
+
+
+    <select id="getId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where mo.id=#{id}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+    </select>
+
+
+    <select id="getvilist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.village =#{village}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword}
+            or us.address like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword})
+        </if>
+    </select>
+
+    <select id="getTownlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword}
+            or us.address like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword})
+        </if>
+    </select>
+
+    <select id="getUserlist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where us.county=#{county}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword}
+            or us.address like concat('%', #{keyword}, '%')
+            or ap.card_id = #{keyword})
+        </if>
+    </select>
+
+    <select id="weblist" resultType="com.github.wxiaoqi.security.modules.inspur.vo.MonitorVO">
+        <include refid="monitor"></include>
+        where us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        <if test="name != null  and name != ''">
+            and us.name like concat('%', #{name}, '%')
+        </if>
+        <if test="town != null  and town != ''">
+            and us.town = #{town}
+        </if>
+        <if test="village != null  and village != ''">
+            and us.village = #{village}
+        </if>
+        <if test="staff != null  and staff != ''">
+            and us.staff = #{staff}
+        </if>
+        order by mo.create_time desc
+    </select>
+
+
+    <sql id="archive">
+        select us.id             userId,
+               us.name           name,
+               us.town           town,
+               us.address        address,
+               us.mobile_phone   mobilePhone,
+               us.staff          staff,
+               us.crt_time       crtTime,
+               ap.card_id        cardId,
+               ap.front          front,
+               ap.back           Back,
+               ap.member         member,
+               ap.poor           poor,
+               ap.report         report,
+               ap.house          house,
+               ap.card_bank      cardBank,
+               ap.Housing_st     housingSt,
+               ap.house_type     houseType,
+               ap.house_image    houseImage,
+               ap.house_plan     housePlan,
+               ap.crea_time      creaTime,
+               rw.au_time        auTime,
+               rw.schedule       schedule,
+               rw.au_notes       auNotes,
+               rw.au_appr        auAppr,
+               rw.record         record,
+               rw.autell_image   autellImage,
+               rw.scene          scene,
+               rw.receipt        receipt,
+               rw.autell_time    autellTime,
+               rw.wn_time        wnTime,
+               rw.wn_schedule    wnschedule,
+               rw.wn_notes       wnNotes,
+               rw.wn_appr        wnAppr,
+               rw.fieldwn        fieldwn,
+               rw.wntell_image   wntellImage,
+               rw.scenewn        scenewn,
+               rw.receiptwn      receiptwn,
+               rw.hold           hold,
+               rw.protocol       protocol,
+               rw.wntell_time    wntellTime,
+               rw.ty_time        tyTime,
+               rw.ty_schedule    tyschedule,
+               rw.ty_notes       tyNotes,
+               rw.ty_appr        tyAppr,
+               rw.tytell_image   tytellImage,
+               rw.tytell_time    tytellTime,
+               rw.mz_time        mzTime,
+               rw.mz_schedule    mzschedule,
+               rw.mz_notes       mzNotes,
+               rw.mz_appr        mzAppr,
+               rw.mztell_image   mztellImage,
+               rw.zj_time        zjTime,
+               rw.zj_schedule    zjschedule,
+               rw.zj_notes       zjNotes,
+               rw.zj_appr        zjAppr,
+               rw.zjtell_image   zjtellImage,
+               rw.zjtell_time    zjtellTime,
+               mo.contract       contract,
+               mo.contract_time  contractTime,
+               mo.promise        promise,
+               mo.promise_time   promiseTime,
+               mo.liability      liability,
+               mo.liability_time liabilityTime,
+               mo.inform         inform,
+               mo.inform_time    informTime,
+               mo.found          found,
+               mo.found_time     foundTime,
+               mo.part           part,
+               mo.part_time      partTime,
+               mo.capped         capped,
+               mo.capped_time    cappedTime,
+               mo.acceptance     acceptance,
+               mo.ace_time       aceTime,
+               mo.Violation      violation,
+               mo.checking       checking,
+               mo.checking_time  checkingTime,
+               mo.urge           urge,
+               mo.urge_time      urgeTime,
+               mo.filing         filing,
+               mo.filing_time    filingTime,
+               mo.transfer       transfer,
+               mo.transfer_time  transferTime
+        from base_monitor mo
+                 INNER JOIN base_userinfo us on us.id = mo.user_id
+                 INNER JOIN base_app ap on ap.user_id = us.id
+                 INNER JOIN base_review rw on rw.app_id = ap.id
+    </sql>
+
+
+    <select id="getarchivesId" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ArchivesVO">
+        <include refid="archive"></include>
+        where us.id =#{userId}
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        and rw.is_delete=0
+    </select>
+
+
+    <select id="getvifile" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ArchivesVO">
+        <include refid="archive"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.village =#{village}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword})
+        </if>
+    </select>
+
+    <select id="getTownfile" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ArchivesVO">
+        <include refid="archive"></include>
+        where us.county=#{county}
+        and us.town =#{town}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword})
+        </if>
+    </select>
+
+    <select id="getUserfile" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ArchivesVO">
+        <include refid="archive"></include>
+        where us.county=#{county}
+        and us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        and rw.is_delete=0
+        <if test="keyword!=null">
+            and (us.name like concat('%', #{keyword}, '%')
+            or us.mobile_phone = #{keyword}
+            or us.staff =#{keyword})
+        </if>
+    </select>
+
+    <select id="getInfo" resultType="com.github.wxiaoqi.security.modules.inspur.vo.ArchivesVO">
+        <include refid="archive"></include>
+        where us.type=0
+        and us.is_delete=0
+        and ap.is_delete=0
+        and mo.is_delete=0
+        and rw.is_delete=0
+        <if test="name != null  and name != ''">
+            and us.name like concat('%', #{name}, '%')
+        </if>
+        <if test="town != null  and town != ''">
+            and us.town = #{town}
+        </if>
+        <if test="village != null  and village != ''">
+            and us.village = #{village}
+        </if>
+        <if test="staff != null  and staff != ''">
+            and us.staff = #{staff}
+        </if>
+        order by us.crt_time asc
+    </select>
+
+</mapper>

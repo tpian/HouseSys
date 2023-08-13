@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.modules.inspur.mapper.ReviewMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.github.wxiaoqi.security.modules.inspur.entity.Review" id="reviewMap">
+        <result property="id" column="id"/>
+        <result property="auTime" column="au_time"/>
+        <result property="schedule" column="schedule"/>
+        <result property="auNotes" column="au_notes"/>
+        <result property="auAppr" column="au_appr"/>
+        <result property="record" column="record"/>
+        <result property="autellImage" column="autell_image"/>
+        <result property="scene" column="scene"/>
+        <result property="receipt" column="receipt"/>
+        <result property="autellTime" column="autell_time"/>
+        <result property="wnTime" column="wn_time"/>
+        <result property="wnSchedule" column="wn_schedule"/>
+        <result property="wnNotes" column="wn_notes"/>
+        <result property="wnAppr" column="wn_appr"/>
+        <result property="fieldwn" column="fieldwn"/>
+        <result property="wntellImage" column="wntell_image"/>
+        <result property="scenewn" column="scenewn"/>
+        <result property="receiptwn" column="receiptwn"/>
+        <result property="hold" column="hold"/>
+        <result property="protocol" column="protocol"/>
+        <result property="wntellTime" column="wntell_time"/>
+        <result property="tyTime" column="ty_time"/>
+        <result property="tySchedule" column="ty_schedule"/>
+        <result property="tyNotes" column="ty_notes"/>
+        <result property="tyAppr" column="ty_appr"/>
+        <result property="mzTime" column="mz_time"/>
+        <result property="mzSchedule" column="mz_schedule"/>
+        <result property="mzNotes" column="mz_notes"/>
+        <result property="mzAppr" column="mz_appr"/>
+        <result property="zjTime" column="zj_time"/>
+        <result property="zjSchedule" column="zj_schedule"/>
+        <result property="zjNotes" column="zj_notes"/>
+        <result property="zjAppr" column="zj_appr"/>
+        <result property="zjtellImage" column="zjtell_image"/>
+        <result property="zjtellTime" column="zjtell_time"/>
+        <result property="creaTime" column="crea_time"/>
+        <result property="appId" column="app_id"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+
+</mapper>

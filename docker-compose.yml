@@ -1,0 +1,58 @@
+version: '2'
+services:
+  eureka:
+    image: ag/ace-center
+    ports:
+      - "####:####" #eureka端口
+  ace-auth:
+    image: ag/ace-auth
+    ports:
+      - "####:####" #端口
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=#### #eureka端口
+      - REDIS_HOST=redis
+      - REDIS_PORT=#### #redis端口
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=#### #mysql端口
+      - RABBIT_MQ_HOST=rabbitmq
+      - RABBIT_MQ_HOST=#### #rabbitmq端口
+  ace-admin:
+    image: ag/ace-admin
+    ports:
+      - "####:####" #微服务端口
+    links:
+      - ace-auth
+    entrypoint: ./wait-for-it.sh ace-auth:9777 -t 600 --
+    command: java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+    environment:
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=#### #eureka端口
+      - REDIS_HOST=redis
+      - REDIS_PORT=#### #redis端口
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=#### #mysql端口
+      - RABBIT_MQ_HOST=rabbitmq
+      - RABBIT_MQ_HOST=#### #rabbitmq端口
+  ace-gate:
+    image: ag/ace-gate
+    ports:
+      - "####:####" #gatway端口
+    links:
+      - ace-auth
+    entrypoint: ./wait-for-it.sh ace-auth:9777 -t 600 --
+    command: java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+    environment:
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=#### #eureka端口
+      - RABBIT_MQ_HOST=rabbitmq
+      - RABBIT_MQ_HOST=#### #rabbitmq端口
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "####:####" #redis端口
+    volumes:
+      - ./.docker/redis:/var/lib/redis

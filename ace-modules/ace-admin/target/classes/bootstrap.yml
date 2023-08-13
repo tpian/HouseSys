@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: ace-admin
+  cloud:
+    nacos:
+      config:
+        server-addr: 119.3.232.15:8848
+        file-extension: yaml
+    sleuth:
+      enabled: false
+      sample:
+        zipkin:
+          # When enabled=false, traces log to the console. Comment to send to zipkin
+          enabled: false
+  profiles:
+    active: dev

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: cloud-generator
+  cloud:
+    nacos:
+      config:
+        server-addr: xxx.xxx.xxx.xxx:xxxx #nacos地址、端口
+        file-extension: yaml
+
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
