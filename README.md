@@ -383,7 +383,9 @@ public class GatewayConfig {
 
 &emsp;&emsp; 【拓展，可跳过】
 &emsp;&emsp;1. 关于 RestTemplate： RestTemplate 是 Spring3.0 开始 提供的用于访问 Rest 服务（相关注解：center server 中`@RestController`）的客户端，提供了多种便捷访问远程 Http 服务的方法，能够大大提高客户端的编写效率。在 Spring Cloud 中，使用 RestTemplate 进行服务间的调用时，会自动实现负载均衡的效果，即会根据服务名来调用不同的服务实例，从而实现负载均衡的效果。
+
 &emsp;&emsp;2. 关于 WebClient.Builder：WebClient.Builder 对象是 Spring WebFlux 中的一个非阻塞式的 HTTP 客户端，与 RestTemplate 不同，WebClient.Builder 对象不会阻塞线程，而是使用异步的方式进行请求，能更好地提升系统的吞吐量。
+
 &emsp;&emsp;3. @LoadBalanced 将请求交给 LoadBalancerInterceptor 来选择微服务节点，默认采用的是轮询策略，每个请求中按时间顺序逐一分配到不同的在微服务集群的节点，如果节点故障或下线则剔除该节点。
 
 ```java
