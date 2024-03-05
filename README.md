@@ -763,5 +763,5 @@ String compactJws = Jwts.builder()
 
 &emsp;&emsp;3. 权限：为配合前端`v-permission`使用，每个权限实体的权限字符不同，表示为`页面路径名:操作`，如`userinfoManager:btn_add`，表示用户管理页面的添加操作，前端使用`v-permission`时，将权限字符作为参数传入，若用户具有该权限，则显示该按钮，否则不显示。
 
-**最近笔试、面试、论文方面的准备较为繁忙，将后端代码抹去关键信息开源，以秋招部分公司中项目汇报 PPT 作为此讲解的补充，详情见[ppt 地址](https://github.com/tpian/HouseSys/docs/display.pdf) **
+**最近笔试、面试、论文方面的准备较为繁忙，将后端代码抹去关键信息开源，以秋招部分公司中项目汇报 PPT 作为此讲解的补充，详情见[ppt 地址](https://github.com/tpian/HouseSys/blob/main/docs/display.pdf) **
 ![Image Text](./figure/display.png)
