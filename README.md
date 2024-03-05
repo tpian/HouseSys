@@ -31,7 +31,7 @@ Web 管理系统主页截图：
    > - 农户登录
    >   - 农户注册；
    >   - 提出危房改造申请；
-   >   - 改造申请通过后，建房过程中，提交房屋图片、建房件货、责任书等材料。
+   >   - 改造申请通过后，建房过程中，提交房屋图片、建房计划、责任书等材料。
    > - 干部登录
    >   - 审核/驳回申请
 
@@ -264,6 +264,7 @@ gateway 在网络中的主要作用如下：
 该功能的实现方法如下：
 
 &emsp;&emsp;**step 1**: 在启动类上使用注解@EnableFeignClients 启用 feign 客户端；扫描和注册 feign 客户端的 bean 定义，配置见 gateway 的启动类 GatewayServerBootstrap.class 在上方的定义，其中`EnableFeignClients`的值表示当前模块需要用到`com.github.wxiaoqi.security.auth.client.feign`包下的 feign 接口；
+
 &emsp;&emsp;**step 2**: 在`com.github.wxiaoqi.security.auth.client.feign`包下的服务的接口上使用`@FeignClient`注解，使类中的 feign 接口能被发现，并扫描注册,在`@FeignClient`注解中，`value`表示 Auth 服务在 nacos 中定义的所定义的服务名称:
 
 ```Java
@@ -422,6 +423,7 @@ hystrix:
 ```
 
 &emsp;&emsp;Hystrix 会为每个依赖服务调用分配一个小的线程池，如果线程池已满调用将被立即拒绝，默认不采用排队，加速失败判定时间。
+
 &emsp;&emsp;Hystrix 用户的请求将不再直接访问服务，而是通过线程池中的空闲线程来访问服务，如果线程池已满，或者请求超时，将触发**服务降级**：不阻塞线程，而是调用 fallback 方法，返回一个默认值或者缓存的值，而不是抛出异常。
 
 #### 2.Center Server
@@ -487,7 +489,7 @@ spring:
 mybatis: # mybatis配置
   basepackage: com.github.wxiaoqi.security.admin.modules.mapper # mapper接口所在包
   xmlLocation: classpath:mapper/**/*.xml # mapper.xml文件所在路径
-  mapper-locations: "classpath*:mapper/*.xml" # mapper.xml文件所在路径
+  mapper-locations: 'classpath*:mapper/*.xml' # mapper.xml文件所在路径
 
 # PageHelper分页插件
 pagehelper:
@@ -553,7 +555,7 @@ management: # 管理端点配置
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: '*'
         exclude: heapdump,dump,threaddump,configprops,env
   security:
     enabled: true
@@ -565,19 +567,19 @@ jwt:
   rsa-secret: xxxxxxx # 需要根据实际配置rsa加密密钥
 
 wechat:
-  appid: "xxxxxx" # 需要根据实际配置微信小程序appid
-  secret: "xxxxxx" # 需要根据实际配置微信小程序secret
-  temp: "xxxxxx" # 需要根据实际配置微信小程序模板id
-  template: "xxxxxx" # 需要根据实际配置微信小程序模板id
+  appid: 'xxxxxx' # 需要根据实际配置微信小程序appid
+  secret: 'xxxxxx' # 需要根据实际配置微信小程序secret
+  temp: 'xxxxxx' # 需要根据实际配置微信小程序模板id
+  template: 'xxxxxx' # 需要根据实际配置微信小程序模板id
 
 #阿里云oss服务配置
 aliyun:
   oss:
-    bucketName: "xxxxxx" # 需要根据实际配置oss bucketName
-    endPoint: "xxxxxx.com" # 需要根据实际配置oss endPoint
-    accessKeyId: "xxxxxx" # 需要根据实际配置oss accessKeyId
-    accessKeySecret: "xxxxxx" # 需要根据实际配置oss accessKeySecret
-    urlPrefix: "xxxxxx" # 文件上传后的访问地址前缀，需要根据实际配置oss urlPrefix
+    bucketName: 'xxxxxx' # 需要根据实际配置oss bucketName
+    endPoint: 'xxxxxx.com' # 需要根据实际配置oss endPoint
+    accessKeyId: 'xxxxxx' # 需要根据实际配置oss accessKeyId
+    accessKeySecret: 'xxxxxx' # 需要根据实际配置oss accessKeySecret
+    urlPrefix: 'xxxxxx' # 文件上传后的访问地址前缀，需要根据实际配置oss urlPrefix
 
 # 文件路径 示例（Linux配置 /home/dangan/uploadPath）
 ace:
@@ -605,6 +607,38 @@ public class AdminBootstrap {
 ##### <span id="id0"> 私钥、公钥生成</span>
 
 &emsp;&emsp;部分功能依赖于公钥、私钥对，在项目启动时，会自动生成公钥、私钥对，公钥、私钥对的生成与存储在`com.github.wxiaoqi.security.auth.configuration.KeyConfiguration`类中，生成的公钥、私钥对将存储在 redis 中。
+
+##### <span id="id0"> 请求拦截器</span>
+
+&emsp;&emsp;危房改造微服务中的请求拦截器通过实现`WebMvcConfigurer`接口实现。在他的实现类中：
+
+> &emsp;&emsp;1.定义了全局 ExceptionHandler，对接口方法中抛出的异常进行统一处理,返回错误信息，代码如下。
+> &emsp;&emsp;2.重写了 addInterceptors 方法，添加了请求拦截器，在将请求交给接口处理前，使用 preHandle 方法，从 token 中获取用户信息，并保存在一个 TreadLocal 的 Map 中;
+> &emsp;&emsp;3.在该实现类上添加`@Configuration`与`@Primary`注解，使其在服务启动时成为 IOC 容器中的一个 Bean，且优先使用该 Bean。
+
+```Java 全局ExceptionHandler
+@ControllerAdvice("com.github.wxiaoqi.security")// 拦截com.github.wxiaoqi.security包中的异常
+@ResponseBody
+public class GlobalExceptionHandler {
+    private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);// 日志记录器
+
+    @ExceptionHandler(ClientTokenException.class)// 拦截权限不足异常
+    public BaseResponse clientTokenExceptionHandler(HttpServletResponse response, ClientTokenException ex) {
+        response.setStatus(403);
+        logger.error(ex.getMessage(),ex);
+        return new BaseResponse(ex.getStatus(), ex.getMessage());
+    }
+    //...其他异常处理
+    @ExceptionHandler(Exception.class)// 拦截其他异常
+    public BaseResponse otherExceptionHandler(HttpServletResponse response, Exception ex) {
+        response.setStatus(500);
+        logger.error(ex.getMessage(),ex);
+        return new BaseResponse(CommonConstants.EX_OTHER_CODE, ex.getMessage());
+    }
+}
+```
+
+在 gateway 中定义了过滤器，对请求进行了鉴权过滤，在 center server 中，对请求进行了拦截，主要是根据请求中的 token 获取用户信息，并保存在一个 TreadLocal 的 Map 中，供后续使用。
 
 ##### 鉴权服务
 
@@ -681,7 +715,53 @@ String compactJws = Jwts.builder()
 
 ##### 用户服务
 
-&emsp;&emsp;用户服务主要实现了角色组、角色、用户、菜单、权限、操作日志的增删改查
+&emsp;&emsp;用户服务主要实现了角色、用户、菜单、权限的增删改查，以及操作日志的生成。
+
+- 角色、用户、菜单、权限的增删改查
+
+&emsp;&emsp;角色、用户、菜单、权限实体的对应联系如下，图中仅列举了每种实体较为关键的键：
+![Image Text](./figure/userER.png)
+&emsp;&emsp;1.联系：系统的每位登录用户将与一种角色对应，角色与菜单、权限是多对多的关系，解除用户与菜单、权限之间的耦合，降低为用户配置权限、菜单的复杂度。
+&emsp;&emsp;2.角色与菜单的在页面的展示为树形结构，以菜单为例，菜单在页面中的显示如图，为存储树形结构，菜单实体中包含了父菜单的 id，根节点的父菜单 id 为-1，菜单的树形结构的生成使用了递归算法，具体实现在`com.github.wxiaoqi.security.common.util.TreeUtil`类中的`buildByRecursive`方法中。
+![Image Text](./figure/menu.png)
+
+```Java
+  /**
+   * 使用递归方法建树
+   *
+   * @param treeNodes
+   * @return
+   */
+  public static <T extends TreeNode> List<T> buildByRecursive(List<T> treeNodes,Object root) {
+    List<T> trees = new ArrayList<T>();
+    for (T treeNode : treeNodes) {
+      if (root.equals(treeNode.getParentId())) {
+        trees.add(findChildren(treeNode, treeNodes));
+      }
+    }
+    return trees;
+      /**
+   * 递归查找子节点
+   *
+   * @param treeNodes
+   * @return
+   */
+  public static <T extends TreeNode> T findChildren(T treeNode, List<T> treeNodes) {
+    for (T it : treeNodes) {
+      if (treeNode.getId() == it.getParentId()) {
+        if (treeNode.getChildren() == null) {
+          treeNode.setChildren(new ArrayList<TreeNode>());
+        }
+        treeNode.add(findChildren(it, treeNodes));
+      }
+    }
+    return treeNode;
+  }
+
+  }
+```
+
+&emsp;&emsp;3. 权限：为配合前端`v-permission`使用，每个权限实体的权限字符不同，表示为`页面路径名:操作`，如`userinfoManager:btn_add`，表示用户管理页面的添加操作，前端使用`v-permission`时，将权限字符作为参数传入，若用户具有该权限，则显示该按钮，否则不显示。
 
 ##### 业务服务
 
