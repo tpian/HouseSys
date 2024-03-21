@@ -751,8 +751,11 @@ String compactJws = Jwts.builder()
 - 角色、用户、菜单、权限的增删改查
 
 &emsp;&emsp;角色、用户、菜单、权限实体的对应联系如下，图中仅列举了每种实体较为关键的键：
+
 ![Image Text](./figure/userER.png)
+
 &emsp;&emsp;1.联系：系统的每位登录用户将与一种角色对应，角色与菜单、权限是多对多的关系，解除用户与菜单、权限之间的耦合，降低为用户配置权限、菜单的复杂度。
+
 &emsp;&emsp;2.角色与菜单的在页面的展示为树形结构，以菜单为例，菜单在页面中的显示如图，为存储树形结构，菜单实体中包含了父菜单的 id，根节点的父菜单 id 为-1，菜单的树形结构的生成使用了递归算法，具体实现在`com.github.wxiaoqi.security.common.util.TreeUtil`类中的`buildByRecursive`方法中。
 ![Image Text](./figure/menu.png)
 
