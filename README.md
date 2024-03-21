@@ -612,9 +612,36 @@ public class AdminBootstrap {
 
 &emsp;&emsp;危房改造微服务中的请求拦截器通过实现`WebMvcConfigurer`接口实现。在他的实现类中：
 
-> &emsp;&emsp;1.定义了全局 ExceptionHandler，对接口方法中抛出的异常进行统一处理,返回错误信息，代码如下。
-> &emsp;&emsp;2.重写了 addInterceptors 方法，添加了请求拦截器，在将请求交给接口处理前，使用 preHandle 方法，从 token 中获取用户信息，并保存在一个 TreadLocal 的 Map 中;
-> &emsp;&emsp;3.在该实现类上添加`@Configuration`与`@Primary`注解，使其在服务启动时成为 IOC 容器中的一个 Bean，且优先使用该 Bean。
+```Java
+@Configuration("admimWebConfig")
+@Primary
+public class WebConfiguration implements WebMvcConfigurer {
+    @Bean
+    GlobalExceptionHandler getGlobalExceptionHandler() {
+        return new GlobalExceptionHandler();
+    }
+
+    @Bean
+    UserAuthRestInterceptor getUserAuthRestInterceptor() {
+        return new UserAuthRestInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(getUserAuthRestInterceptor()).addPathPatterns(getIncludePathPatterns());
+    }
+
+        /**
+     * 需要用户和服务认证判断的路径
+     * @return
+     */
+    private ArrayList<String> getIncludePathPatterns() {
+      // .... 返回需要用户和服务认证判断的路径列表
+    }
+}
+```
+
+&emsp;&emsp;1.定义了全局 ExceptionHandler，对接口方法中抛出的异常进行统一处理,返回错误信息，代码如下。
 
 ```Java 全局ExceptionHandler
 @ControllerAdvice("com.github.wxiaoqi.security")// 拦截com.github.wxiaoqi.security包中的异常
@@ -637,6 +664,10 @@ public class GlobalExceptionHandler {
     }
 }
 ```
+
+&emsp;&emsp;2.重写了 addInterceptors 方法，添加了请求拦截器，在将请求交给接口处理前，使用 preHandle 方法，从 token 中获取用户信息，并保存在一个 TreadLocal 的 Map 中;
+
+&emsp;&emsp;3.在`WebMvcConfigurer`实现类上添加`@Configuration`与`@Primary`注解，使其在服务启动时成为 IOC 容器中的一个 Bean，且优先使用该 Bean。
 
 在 gateway 中定义了过滤器，对请求进行了鉴权过滤，在 center server 中，对请求进行了拦截，主要是根据请求中的 token 获取用户信息，并保存在一个 TreadLocal 的 Map 中，供后续使用。
 
